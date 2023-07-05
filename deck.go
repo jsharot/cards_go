@@ -8,22 +8,22 @@ import (
 	"time"
 )
 
-type Card struct {
+//Card type  associations
+
+type card struct {
 	Suit  string
 	Value int
 }
 
-//Create a new type of deck
-//Which is a slice of a strings
-//Eventually we are going to upgrade this so that it is a
-//Slice of a map {suit: is a constant string, number: 1-10 }
-//Handle the face values as  1 (ACE) ints 11 (Jack) 12 (Queen) 13 (King)
-
-type deck []Card
-
-func emptyDeck() deck {
-	return deck{}
+var inputMappings = map[string]string{
+	"h": "Hearts",
+	"d": "Diamonds",
+	"s": "Spades",
+	"c": "Clubs",
 }
+
+// Deck Type
+type deck []card
 
 func newDeck() deck {
 	cards := deck{}
@@ -32,7 +32,7 @@ func newDeck() deck {
 
 	for _, suit := range cardSuits {
 		for i := 1; i <= 13; i++ {
-			cards = append(cards, Card{suit, i})
+			cards = append(cards, card{suit, i})
 		}
 
 	}
@@ -61,17 +61,24 @@ func (d deck) toFile(filename string) error {
 
 }
 
-// func newDeckFromFile(filename string) deck {
-// 	bs, err := ioutil.ReadFile(filename)
-// 	fmt.Print(bs)
-// 	if err != nil {
-// 		//Option one: log error and give a new deck
-// 		//Option two: raise an error
-// 		fmt.Println("Error: ", err)
-// 		os.Exit(1)
-// 	}
+func newDeckFromFile(filename string) deck {
+	bs, err := ioutil.ReadFile(filename)
+	//fmt.Print(bs)
+	if err != nil {
+		//Option one: log error and give a new deck
+		//Option two: raise an error
+		//fmt.Println("Error: ", err)
+		return nil
+	}
+	fDeck := deck{}
+	err2 := json.Unmarshal(bs, &fDeck)
+	if err2 != nil {
+		//fmt.Println("Error:", err)
+		return nil
 
-// }
+	}
+	return fDeck
+}
 
 func (d deck) shuffleDeck() {
 
